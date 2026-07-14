@@ -1,6 +1,6 @@
-# The Exchange — Currency Trading Card Game
+# The Exchange — Currency & History Trading Card Game
 
-A digital TCG where every card is a real historical U.S. coin or banknote. Build purses, make change, challenge opponents, and trade your way to fortune.
+A digital TCG featuring three game modes: a Political Arena history mode with 935+ historical cards, a classic purse-building TCG with real U.S. coins and banknotes, and a trade-battle duel mode. Build purses, make change, challenge opponents, trade for profit, or rewrite history.
 
 ## Quick Start
 
@@ -14,7 +14,19 @@ Requires Python 3.10+ and pygame:
 pip install pygame
 ```
 
+The game launches in **fullscreen** and auto-scales UI elements to your monitor resolution.
+
 ## Game Modes
+
+### History Mode (Political Arena)
+- Deep strategy card combat with 935+ historical cards spanning centuries
+- Reduce opponent's life (influence) from 30 to 0 to win
+- 6 card types: Figures, Events, Conspiracies, Scandals, Organizations, Policies
+- Synergy system: cards with matching tags boost each other's Power & Influence
+- Treasury economy: earn $ from economic cards, spend on bonuses
+- Discard up to 3 cards per turn (draws replacement)
+- AI opponent with Easy (30 rounds) / Medium (25) / Hard (20) difficulty
+- Press **H** during gameplay for an in-depth help overlay
 
 ### Classic TCG (Exchange Mode)
 - Build a purse of currency cards through math-based exchanges
@@ -36,11 +48,54 @@ pip install pygame
 
 | File | Description |
 |------|-------------|
-| `TCG.py` | Core game engine: cards, decks, players, abilities, AI logic |
-| `TCG_GUI.py` | Pygame GUI client (1280x820) for both Classic and Duel modes |
-| `ExchangeDuel.py` | Duel mode engine: trade offers, profit tracking, utility abilities |
-| `test_sim.py` | Headless AI vs AI simulation for duel mode testing |
+| `TCG.py` | Single standalone file: all engines, GUI, card data (8990 lines) |
+| `test_sim.py` | Headless AI vs AI simulation for duel mode |
+| `test_hist.py` | History mode tests (card counts, synergies, treasury, AI vs AI) |
 | `Projectgoal.md` | Game design document and historical card reference |
+| `OVERVIEW.md` | Project overview and architecture summary |
+
+## History Mode — How to Play
+
+### Setup
+- Each player gets a 30-card deck from a pool of 935+ historical cards
+- Start with 30 life (influence) and a 7-card hand
+- Board holds up to 7 Figures at a time
+
+### Card Types
+| Type | Role |
+|------|------|
+| **Figure** | Deploy to board — attacks with Power, defends with Influence |
+| **Event** | One-shot — deals damage to opponent AND heals you |
+| **Conspiracy** | Face-down trap — counters direct attacks |
+| **Scandal** | Target an opponent figure — reduces their PWR/INF |
+| **Organization** | Passive — +1 PWR/INF to same-org cards on your board |
+| **Policy** | Passive — draw 2 cards per turn instead of 1 |
+
+### Turn Structure
+1. **Draw** 1 card (2 if you have a Policy active)
+2. **Play phase**: Play cards from your hand to the board
+   - Select a hand card, then click the Play button
+   - For Scandals: select a hand card, then select an opponent figure as target
+   - Discard up to 3 unwanted cards (draws replacements)
+3. **Attack phase**: Select your figure, then select an opponent figure to attack
+   - Power (attacker) vs Influence (defender) — excess becomes damage
+   - No defenders? Attack directly for full damage
+   - Figures played this turn can't attack (summoning sickness)
+4. **End turn** — AI takes its turn
+
+### Treasury System
+Playing economic cards earns money ($) to spend on bonuses:
+- **$5**: +2 PWR to a selected figure (one turn)
+- **$8**: Heal 3 life
+- **$4**: Draw a card from your deck
+- **$6**: Reveal and neutralize an opponent's conspiracy trap
+- **Sacrifice** a hand card: +$3 to treasury
+
+### Synergy System
+Cards with matching tags form synergy groups that boost each other's Power and Influence. The more matching tags on your board, the stronger the bonus. 80+ synergy groups cover intelligence, finance, military, media, energy, and more.
+
+### Win Condition
+First to reduce opponent's life to 0 wins!
 
 ## Classic TCG — How to Play
 
@@ -115,8 +170,21 @@ pip install pygame
 
 ## GUI Controls
 
-- **Click cards** to select them (hand cards for playing, portfolio cards for abilities)
-- **Click action buttons** on the right panel to play cards, start offers, use abilities, end turn
+### All Modes
+- **Click cards** to select them (hand cards for playing, board cards for abilities/attacking)
+- **Click action buttons** on the right panel to execute actions
+- **ESC**: Return to menu / close overlays
+
+### History Mode
+- **Click hand card** to select it for playing or discarding
+- **Click Play button** to deploy the selected card
+- **Click your board figure** to select an attacker (attack phase)
+- **Click opponent figure** to select a target (attack phase or scandal)
+- **Click Discard button** to discard the selected hand card (up to 3 per turn)
+- **H**: Toggle in-game help overlay
+- **ESC**: Return to menu
+
+### Duel Mode
 - **Offer mode**: Click your cards to offer, click opponent cards to request, then submit
 - **Respond mode**: When AI makes you an offer, click Accept or Decline
 - **Forfeit** button available during duel play
@@ -129,4 +197,8 @@ Run the duel AI simulation headlessly:
 python test_sim.py
 ```
 
-This runs an AI vs AI match and prints round-by-round profits, trade results, and the winner.
+Run the history mode tests (card counts, synergies, treasury, AI vs AI):
+
+```bash
+python test_hist.py
+```
